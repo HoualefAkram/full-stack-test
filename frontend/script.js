@@ -37,7 +37,7 @@ function login() {
 }
 
 function addCourse() {
-    const input = document.getElementById('courseInput');
+    const input = document.getElementById("courseInput");
     const courseName = input.value.trim();
     if (courseName) {
         addCourseToDb(courseName)
@@ -75,6 +75,9 @@ function addCourseToDb(courseName) {
         })
         .catch(error => {
             console.error("Error:", error);
+            const listItem = document.createElement("li");
+            listItem.textContent = courseName;
+            courseList.appendChild(listItem);
         });
 }
 
