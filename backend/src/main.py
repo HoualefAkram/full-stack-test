@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-import psycopg2
-from fastapi import HTTPException
+from pydantic import BaseModel
+
+
+class Course(BaseModel):
+    name: str
 
 
 app = FastAPI()
@@ -15,34 +18,23 @@ app.add_middleware(
 )
 
 
+courses: list = []
+
+
 @app.get("/")
 async def root():
     return {"message": "Houalef akram"}
 
 
-@app.post("/login", status_code=200)
-async def login(username: str, password: str):
-    conn = psycopg2.connect(
-        user="postgres", password="admin", database="backend", host="127.0.0.1"
-    )
-    cursor = conn.cursor()
-    cursor.execute(
-        "SELECT * FROM users WHERE username = %s AND password = %s",
-        (username, password),
-    )
-    result = cursor.fetchone()
-    cursor.close()
-    conn.close()
+@app.post("/course", status_code=200)
+def add_course(course: Course):
+    courses.append(course.name)
+    return course.name
 
-    query = "SELECT * FROM users WHERE username = $1 AND password = $2"
-    result = await conn.fetchrow(query, username, password)
 
-    await conn.close()
-
-    if result:
-        return {"message": "Login successful"}
-    else:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+@app.get("/course", status_code=200)
+def getCourses():
+    return {"data": courses}
 
 
 if __name__ == "__main__":
