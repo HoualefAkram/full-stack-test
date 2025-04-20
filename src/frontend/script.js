@@ -29,7 +29,7 @@ function login() {
 
     if (users[username] === password) {
         localStorage.setItem('loggedInUser', username);
-        window.location.href = "home.html";
+        window.location.href = "/static/home.html";
         return;
     }
 

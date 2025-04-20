@@ -2,6 +2,9 @@ from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+import os
 
 
 class Course(BaseModel):
@@ -21,9 +24,16 @@ app.add_middleware(
 courses: list = []
 
 
+frontend_path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "frontend")
+)
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+
 @app.get("/")
-async def root():
-    return {"message": "Houalef akram"}
+def read_index():
+    index_path = os.path.join(frontend_path, "index.html")
+    return FileResponse(index_path)
 
 
 @app.post("/course", status_code=200)
